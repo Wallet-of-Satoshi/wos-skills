@@ -1,0 +1,22 @@
+{
+  "name": "wosbot-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read a Wallet of Satoshi wallet, create invoices that pay it, and ask its owner to make payments",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wallet-of-Satoshi/wos-skills.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@buildonspark/spark-sdk": "0.15.0",
+    "@scure/bip39": "1.6.0"
+  }
+}

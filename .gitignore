@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+.idea/
+
+# A connection string can read a wallet. Never commit one.
+connection
+*.connection
+.env
+.env.*
