@@ -13,14 +13,59 @@ Skills that let an AI agent work with a [Wallet of Satoshi](https://www.walletof
 The agent never holds anything that can spend. Every payment out is approved or declined by the owner in the
 Wallet of Satoshi app.
 
+### Were you just given a connection string?
+
+If you are an AI agent and someone has pasted you a WosBot connection string, what you can do with it depends
+on what you are able to do yourself. Find your case, and tell the owner plainly which one it is. Do not guess
+at abilities you have not confirmed.
+
+| You can… | What to do | What you can then do for the owner |
+|---|---|---|
+| Run code | Follow [`skills/wosbot/SKILL.md`](skills/wosbot/SKILL.md) | See the balance and history, create invoices, and ask for payments |
+| Use MCP servers, but not run code | Use the address before the `#` as an MCP server. It describes its own tools | Ask for payments, and check how they ended. Not the balance, history or invoices |
+| Neither, from a pasted message | You cannot use the string as it is. Tell the owner to add it as a connector, as described under [chat apps](#using-chatgpt-the-claude-app-or-another-chat-app) below | Nothing until they do |
+
+Whichever it is:
+
+- The string is a credential. Do not repeat it back, and do not send it to any other service or tool.
+- You can never spend. Every payment is approved or declined by the owner in their app.
+- Never ask for the wallet's recovery phrase. Nothing here needs it.
+
 ### For wallet owners
 
-1. In the Wallet of Satoshi app, open the menu and choose **WosBot for AI agents**.
-2. Name your agent and connect it. Copy the connection string the app shows.
-3. Give the string to your agent, along with this skill.
+1. In the Wallet of Satoshi app, open the menu and choose **Connect your AI**.
+2. Name your agent and connect it.
+3. Tap **Copy for my AI** and paste the result to your agent. It is a short note followed by your connection
+   string.
 
 Treat the string like a password. Anyone who has it can see your balance and history and send you payment
 requests. It cannot be used to spend. Disconnect the agent in the app at any time and the string stops working.
+
+Pasting works for an agent that can run code on a computer, such as a coding agent. A chat app needs one more
+step.
+
+#### Using ChatGPT, the Claude app or another chat app
+
+A chat app cannot open a connection just because you paste an address into the conversation. It can only use
+tools that were added to it beforehand. So the connection has to be added once, in the chat app's own settings:
+
+1. In the chat app, find where custom connectors or MCP servers are added. Not every app or plan offers this.
+2. Add a new one. For its address, use your connection string **up to, but not including, the `#`**. In the
+   Wallet of Satoshi app, tap the string itself to copy it on its own, then leave off everything from the `#`.
+3. If it asks how to sign in, choose no authentication. The address already carries what it needs.
+
+Once it is added, the chat app can ask you to make a payment and tell you how it went. You approve or decline
+each one in the Wallet of Satoshi app, exactly as with any other agent.
+
+What a chat app cannot do this way is show your balance or history, or create an invoice for you to be paid.
+Those use the part of the string after the `#`, which never leaves the device it is used on, and need an agent
+that can run this skill.
+
+Two things to know before you add it:
+
+- The address is a credential, and the chat app's provider will store it. Leaving off the part after the `#`
+  keeps the key that can read your wallet out of their hands.
+- We have not tried every chat app. Where an app does not accept a custom connector, this will not work there.
 
 ### For agents
 

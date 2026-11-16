@@ -9,7 +9,7 @@ WosBot connects you to one person's Wallet of Satoshi wallet. You can see its ba
 invoices for it to be paid, and ask its owner to pay a Lightning invoice or Lightning Address. You cannot spend:
 every payment out is approved or declined by the owner in their app, and nothing you do can change that.
 
-The owner connects you by giving you one connection string, copied from the WoS app (menu, WosBot). It has two
+The owner connects you by giving you one connection string, copied from the WoS app (menu, Connect your AI). It has two
 halves, and they work differently:
 
 ```
