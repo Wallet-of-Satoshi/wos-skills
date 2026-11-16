@@ -33,9 +33,9 @@ Whichever it is:
 
 ### For wallet owners
 
-1. In the Wallet of Satoshi app, open the menu and choose **WosBot for AI agents**.
+1. In the Wallet of Satoshi app, open the menu and choose **Connect your AI**.
 2. Name your agent and connect it.
-3. Tap **Copy for my agent** and paste the result to your agent. It is a short note followed by your connection
+3. Tap **Copy for my AI** and paste the result to your agent. It is a short note followed by your connection
    string.
 
 Treat the string like a password. Anyone who has it can see your balance and history and send you payment

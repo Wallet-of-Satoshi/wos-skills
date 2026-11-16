@@ -76,7 +76,7 @@ export async function loadConnection() {
       text = await readFile(connectionFile(), 'utf8');
     } catch {
       throw new WosBotError('NO_CONNECTION',
-        'No connection string saved. Ask the owner for theirs (WoS app, menu, WosBot) and run: connect <string>');
+        'No connection string saved. Ask the owner for theirs (WoS app, menu, Connect your AI) and run: connect <string>');
     }
   }
   return parseConnection(text);
