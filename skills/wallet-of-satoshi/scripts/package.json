@@ -1,5 +1,5 @@
 {
-  "name": "wosbot-skill",
+  "name": "wallet-of-satoshi-skill",
   "version": "0.1.0",
   "private": true,
   "description": "Read a Wallet of Satoshi wallet, create invoices that pay it, and ask its owner to make payments",

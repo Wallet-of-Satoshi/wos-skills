@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-// WosBot: read a Wallet of Satoshi wallet, create invoices that pay it, and ask its owner to make payments.
+// Read a Wallet of Satoshi wallet, create invoices that pay it, and ask its owner to make payments.
 //
 // Every command prints one JSON object. A command that could not do what was asked prints
 // {"error": "<CODE>", "message": "..."} and exits with status 1. Run with no arguments for the list of commands.
 
 import { forgetConnection, loadConnection, parseConnection, saveConnection } from './src/connection.mjs';
-import { WosBotError } from './src/errors.mjs';
+import { SkillError } from './src/errors.mjs';
 import { invoiceFromAddress, parseSats } from './src/lightning.mjs';
 import { DEFAULT_WAIT_SECONDS, connectionStatus, paymentStatus, requestPayment } from './src/server.mjs';
 import { createInvoice, invoiceStatus, readBalance, readHistory } from './src/spark.mjs';
 
-const USAGE = `Usage: node wosbot.mjs <command>
+const USAGE = `Usage: node wos.mjs <command>
 
 Setting up
   connect <connection string>     Save the owner's connection string on this machine (- reads it from stdin)
@@ -34,7 +34,7 @@ Paying (the owner approves each payment in their app)
                                   Ask the owner to pay a Lightning Address
   status <request_id>             What became of a payment request
 
-The connection string is read from WOSBOT_CONNECTION, or from the file "connect" saved.`;
+The connection string is read from WOS_CONNECTION, or from the file "connect" saved.`;
 
 const DEFAULT_HISTORY_LIMIT = 10;
 const MAX_HISTORY_LIMIT = 100;
@@ -141,7 +141,7 @@ async function main() {
     return {forgotten: true};
   }
   if (!Object.hasOwn(COMMANDS, command)) {
-    throw new WosBotError('UNKNOWN_COMMAND', `Unknown command "${command}". Run with no arguments for the list.`);
+    throw new SkillError('UNKNOWN_COMMAND', `Unknown command "${command}". Run with no arguments for the list.`);
   }
   return COMMANDS[command](await loadConnection(), words, options);
 }
@@ -160,7 +160,7 @@ main()
   .catch(error => {
     // Only ever a code and a sentence. An unexpected error's own text is not printed, because it could carry
     // the connection string.
-    const known = error instanceof WosBotError;
+    const known = error instanceof SkillError;
     print({error: known ? error.code : 'UNEXPECTED', message: known ? error.message : 'Something went wrong. Try again.'});
     process.exit(1);
   });

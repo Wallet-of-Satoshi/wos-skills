@@ -1,11 +1,11 @@
-// Payments. The agent cannot pay: it asks the WosBot server to ask the owner, and reads back how that ended.
+// Payments. The agent cannot pay: it asks the Wallet of Satoshi server to ask the owner, and reads back how that ended.
 // The server is a Model Context Protocol (MCP) server; these are its three tools, called over plain HTTP.
 
-import { WosBotError } from './errors.mjs';
+import { SkillError } from './errors.mjs';
 import { invoiceAmountMsat } from './lightning.mjs';
 
 const REQUEST_TIMEOUT_MS = 30_000;
-const POLL_MS = Number(process.env.WOSBOT_POLL_MS) || 5000; // The variable exists so the tests need not wait
+const POLL_MS = Number(process.env.WOS_POLL_MS) || 5000; // The variable exists so the tests need not wait
 const FINAL_STATUSES = ['PAID', 'DECLINED', 'EXPIRED', 'FAILED'];
 
 /** The owner has five minutes to answer; the rest allows the wallet to settle after a late yes. */
@@ -26,23 +26,23 @@ async function callTool(connection, name, args = {}) {
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch {
-    throw new WosBotError('SERVER_UNREACHABLE', 'Could not reach the WosBot server. Try again shortly.');
+    throw new SkillError('SERVER_UNREACHABLE', 'Could not reach the Wallet of Satoshi server. Try again shortly.');
   }
   if (response.status === 401) {
-    throw new WosBotError('NOT_CONNECTED',
+    throw new SkillError('NOT_CONNECTED',
       'The owner has disconnected this agent, or the connection string is wrong. Ask them for a new one.');
   }
   if (response.status === 429) {
-    throw new WosBotError('SLOW_DOWN', 'Too many requests. Wait a minute before trying again.');
+    throw new SkillError('SLOW_DOWN', 'Too many requests. Wait a minute before trying again.');
   }
 
   const body = await response.json().catch(() => null);
   if (!response.ok || !body?.result || body.error) {
-    throw new WosBotError('SERVER_ERROR', body?.error?.message || `The WosBot server answered ${response.status}`);
+    throw new SkillError('SERVER_ERROR', body?.error?.message || `The Wallet of Satoshi server answered ${response.status}`);
   }
   const data = body.result.structuredContent || {};
   if (body.result.isError) {
-    throw new WosBotError(data.code || 'REFUSED', data.message || 'The WosBot server refused the request');
+    throw new SkillError(data.code || 'REFUSED', data.message || 'The Wallet of Satoshi server refused the request');
   }
   return data;
 }
@@ -63,7 +63,7 @@ export function paymentStatus(connection, requestId) {
  */
 export async function requestPayment(connection, invoice, {wait = true, waitSeconds = DEFAULT_WAIT_SECONDS} = {}) {
   if (invoiceAmountMsat(invoice) === null) {
-    throw new WosBotError('AMOUNT_REQUIRED', 'The invoice names no amount. Ask the payee for one that does.');
+    throw new SkillError('AMOUNT_REQUIRED', 'The invoice names no amount. Ask the payee for one that does.');
   }
   let request = await callTool(connection, 'request_payment', {invoice});
   if (!wait) {

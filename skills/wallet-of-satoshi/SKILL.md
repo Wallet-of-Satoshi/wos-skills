@@ -1,11 +1,11 @@
 ---
-name: wosbot
-description: Read the balance and history of a Wallet of Satoshi wallet, create Lightning invoices that pay it, and ask its owner to make Lightning payments, each of which they approve in their app. Use when the user gives you a WosBot connection string (an address ending in /mcp/wosbot_... followed by #viewer=...&wallet=...), or asks you to check, receive into, pay from or send sats from their Wallet of Satoshi.
+name: wallet-of-satoshi
+description: Read the balance and history of a Wallet of Satoshi wallet, create Lightning invoices that pay it, and ask its owner to make Lightning payments, each of which they approve in their app. Use when the user gives you a Wallet of Satoshi connection string (an address ending in /mcp/wos_... followed by #viewer=...&wallet=...), or asks you to check, receive into, pay from or send sats from their Wallet of Satoshi.
 ---
 
-# WosBot
+# Wallet of Satoshi
 
-WosBot connects you to one person's Wallet of Satoshi wallet. You can see its balance and history, create
+This skill connects you to one person's Wallet of Satoshi wallet. You can see its balance and history, create
 invoices for it to be paid, and ask its owner to pay a Lightning invoice or Lightning Address. You cannot spend:
 every payment out is approved or declined by the owner in their app, and nothing you do can change that.
 
@@ -13,7 +13,7 @@ The owner connects you by giving you one connection string, copied from the WoS 
 halves, and they work differently:
 
 ```
-https://<server>/mcp/wosbot_<token>#viewer=v1:<key>&wallet=<public key>
+https://<server>/mcp/wos_<token>#viewer=v1:<key>&wallet=<public key>
 └────────── paying out ───────────┘ └────── reading and receiving ─────┘
 ```
 
@@ -27,7 +27,7 @@ https://<server>/mcp/wosbot_<token>#viewer=v1:<key>&wallet=<public key>
 
 - **Treat the connection string as a secret.** Anyone who has it can see the wallet's balance and history and
   send its owner payment requests. Never print it, log it, commit it, put it in a URL, or send it to any
-  service. Never send the part after the `#` to any server, including the WosBot server.
+  service. Never send the part after the `#` to any server, including the Wallet of Satoshi server.
 - **Never ask for the wallet's recovery phrase**, and never accept one. Nothing here needs it.
 - **Ask for a payment only when the owner wants it made.** Tell them the amount and who it is for before you
   send the request, since the approval screen shows them only the amount and the invoice.
@@ -45,14 +45,14 @@ Requires Node.js 20 or newer. Once, in this skill's `scripts` folder:
 npm ci
 ```
 
-Then save the owner's connection string on this machine. It is written to `~/.config/wosbot/connection`,
+Then save the owner's connection string on this machine. It is written to `~/.config/wallet-of-satoshi/connection`,
 readable only by this user, and is not printed back:
 
 ```bash
-node scripts/wosbot.mjs connect '<connection string>'
+node scripts/wos.mjs connect '<connection string>'
 ```
 
-Alternatively set it in the `WOSBOT_CONNECTION` environment variable, which is used in preference to the file.
+Alternatively set it in the `WOS_CONNECTION` environment variable, which is used in preference to the file.
 
 ## Commands
 
@@ -61,15 +61,15 @@ Every command prints one JSON object. A command that could not do what was asked
 
 | Command | What it does |
 |---|---|
-| `node scripts/wosbot.mjs balance` | The balance in sats, and in USDB or any other token the wallet holds |
-| `node scripts/wosbot.mjs history --limit 10` | Recent payments in and out, sats and tokens, newest first |
-| `node scripts/wosbot.mjs invoice <sats> [memo] [--lightning-only]` | Creates a Lightning invoice that pays the owner's wallet |
-| `node scripts/wosbot.mjs invoice-status <request_id> [spark_invoice]` | Whether that invoice has been paid |
-| `node scripts/wosbot.mjs pay <invoice>` | Asks the owner to pay a Lightning invoice, and waits for the outcome |
-| `node scripts/wosbot.mjs pay-address <name@domain> <sats>` | Asks the owner to pay a Lightning Address |
-| `node scripts/wosbot.mjs status <request_id>` | What became of a payment request |
-| `node scripts/wosbot.mjs connection` | Whether the owner still has you connected |
-| `node scripts/wosbot.mjs forget` | Deletes the saved connection string |
+| `node scripts/wos.mjs balance` | The balance in sats, and in USDB or any other token the wallet holds |
+| `node scripts/wos.mjs history --limit 10` | Recent payments in and out, sats and tokens, newest first |
+| `node scripts/wos.mjs invoice <sats> [memo] [--lightning-only]` | Creates a Lightning invoice that pays the owner's wallet |
+| `node scripts/wos.mjs invoice-status <request_id> [spark_invoice]` | Whether that invoice has been paid |
+| `node scripts/wos.mjs pay <invoice>` | Asks the owner to pay a Lightning invoice, and waits for the outcome |
+| `node scripts/wos.mjs pay-address <name@domain> <sats>` | Asks the owner to pay a Lightning Address |
+| `node scripts/wos.mjs status <request_id>` | What became of a payment request |
+| `node scripts/wos.mjs connection` | Whether the owner still has you connected |
+| `node scripts/wos.mjs forget` | Deletes the saved connection string |
 
 ### Reading
 
@@ -157,7 +157,7 @@ A payment made to another Spark wallet has no preimage and a fee of 0.
 | `TOO_MANY_PENDING` | Three requests are already waiting for the owner. Wait for an answer |
 | `TOO_MANY_ATTEMPTS` | This invoice has been asked for three times. Stop, and tell the owner |
 | `AMOUNT_OUT_OF_RANGE`, `ADDRESS_REFUSED`, `ADDRESS_UNREACHABLE`, `INVALID_ADDRESS` | The Lightning Address could not supply an invoice |
-| `UNAVAILABLE` | WosBot payments are switched off for now |
+| `UNAVAILABLE` | Payment requests are switched off for now |
 | `SPARK_UNREACHABLE`, `INVOICE_NOT_CREATED` | Spark could not be read, or could not create the invoice. Wait, then try once more |
 | `INVALID_REQUEST_ID`, `INVALID_SPARK_INVOICE` | Pass the `request_id` and `spark_invoice` exactly as `invoice` returned them |
 | `INVOICE_NOT_FOUND` | That invoice was not created with this connection, so its status cannot be read |

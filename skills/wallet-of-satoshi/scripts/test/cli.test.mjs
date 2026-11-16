@@ -1,4 +1,4 @@
-// Runs the command line against a stand-in for the WosBot server on this machine. Nothing leaves it: no Spark, no
+// Runs the command line against a stand-in for the Wallet of Satoshi server on this machine. Nothing leaves it: no Spark, no
 // Lightning, no real wallet. The token, keys and invoice are made up.
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
@@ -9,8 +9,8 @@ import { dirname, join } from 'node:path';
 import { after, before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-const CLI = join(dirname(fileURLToPath(import.meta.url)), '..', 'wosbot.mjs');
-const TOKEN = 'wosbot_' + 'b'.repeat(40);
+const CLI = join(dirname(fileURLToPath(import.meta.url)), '..', 'wos.mjs');
+const TOKEN = 'wos_' + 'b'.repeat(40);
 const INVOICE = 'lnbc20n1pvjluezpp5madeup';
 const PREIMAGE = 'ab'.repeat(32);
 
@@ -20,7 +20,7 @@ let seen; // What the stand-in server was sent
 let script; // What it answers each tool with, in order
 
 before(async () => {
-  folder = await mkdtemp(join(tmpdir(), 'wosbot-test-'));
+  folder = await mkdtemp(join(tmpdir(), 'wos-skill-test-'));
   server = createServer((request, response) => {
     let body = '';
     request.on('data', chunk => body += chunk);
@@ -52,7 +52,7 @@ function run(args, env = {}) {
   seen = [];
   return new Promise(resolve => {
     execFile(process.execPath, [CLI, ...args], {
-      env: {PATH: process.env.PATH, WOSBOT_CONNECTION: connectionString(), WOSBOT_CONNECTION_FILE: join(folder, 'connection'), WOSBOT_POLL_MS: '20', ...env},
+      env: {PATH: process.env.PATH, WOS_CONNECTION: connectionString(), WOS_CONNECTION_FILE: join(folder, 'connection'), WOS_POLL_MS: '20', ...env},
     }, (error, stdout) => resolve({code: error ? error.code : 0, stdout, json: JSON.parse(stdout)}));
   });
 }
@@ -127,7 +127,7 @@ test('an invoice with no amount, or for another network, never reaches the serve
 
 test('a withdrawn token says to ask the owner for a new string', async () => {
   script = {};
-  const result = await run(['connection'], {WOSBOT_CONNECTION: connectionString('wosbot_' + 'c'.repeat(40))});
+  const result = await run(['connection'], {WOS_CONNECTION: connectionString('wos_' + 'c'.repeat(40))});
   assert.equal(result.code, 1);
   assert.equal(result.json.error, 'NOT_CONNECTED');
 });
@@ -135,7 +135,7 @@ test('a withdrawn token says to ask the owner for a new string', async () => {
 test('connect checks the string, saves it for this user only, and never prints it', async () => {
   script = {connection_status: [{data: {connected: true, name: 'Test agent'}}]};
   const file = join(folder, 'saved', 'connection');
-  const env = {WOSBOT_CONNECTION: '', WOSBOT_CONNECTION_FILE: file};
+  const env = {WOS_CONNECTION: '', WOS_CONNECTION_FILE: file};
   const result = await run(['connect', connectionString()], env);
   assert.equal(result.json.saved, true);
   assert.ok(!result.stdout.includes(TOKEN) && !result.stdout.includes('viewer'));
@@ -150,7 +150,7 @@ test('connect checks the string, saves it for this user only, and never prints i
 test('a string the server does not know is not saved', async () => {
   script = {};
   const file = join(folder, 'unsaved', 'connection');
-  const result = await run(['connect', connectionString('wosbot_' + 'c'.repeat(40))], {WOSBOT_CONNECTION: '', WOSBOT_CONNECTION_FILE: file});
+  const result = await run(['connect', connectionString('wos_' + 'c'.repeat(40))], {WOS_CONNECTION: '', WOS_CONNECTION_FILE: file});
   assert.equal(result.json.error, 'NOT_CONNECTED');
   await assert.rejects(stat(file));
 });

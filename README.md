@@ -2,9 +2,9 @@
 
 Skills that let an AI agent work with a [Wallet of Satoshi](https://www.walletofsatoshi.com) wallet.
 
-## WosBot
+## The wallet-of-satoshi skill
 
-[`skills/wosbot`](skills/wosbot/SKILL.md) lets an agent:
+[`skills/wallet-of-satoshi`](skills/wallet-of-satoshi/SKILL.md) lets an agent:
 
 - read a wallet's balance and payment history, in sats and in USDB;
 - create Lightning invoices that pay the wallet;
@@ -15,13 +15,13 @@ Wallet of Satoshi app.
 
 ### Were you just given a connection string?
 
-If you are an AI agent and someone has pasted you a WosBot connection string, what you can do with it depends
+If you are an AI agent and someone has pasted you a Wallet of Satoshi connection string, what you can do with it depends
 on what you are able to do yourself. Find your case, and tell the owner plainly which one it is. Do not guess
 at abilities you have not confirmed.
 
 | You can… | What to do | What you can then do for the owner |
 |---|---|---|
-| Run code | Follow [`skills/wosbot/SKILL.md`](skills/wosbot/SKILL.md) | See the balance and history, create invoices, and ask for payments |
+| Run code | Follow [`skills/wallet-of-satoshi/SKILL.md`](skills/wallet-of-satoshi/SKILL.md) | See the balance and history, create invoices, and ask for payments |
 | Use MCP servers, but not run code | Use the address before the `#` as an MCP server. It describes its own tools | Ask for payments, and check how they ended. Not the balance, history or invoices |
 | Neither, from a pasted message | You cannot use the string as it is. Tell the owner to add it as a connector, as described under [chat apps](#using-chatgpt-the-claude-app-or-another-chat-app) below | Nothing until they do |
 
@@ -69,23 +69,23 @@ Two things to know before you add it:
 
 ### For agents
 
-Read [`skills/wosbot/SKILL.md`](skills/wosbot/SKILL.md). It explains what you may do, every command and what
+Read [`skills/wallet-of-satoshi/SKILL.md`](skills/wallet-of-satoshi/SKILL.md). It explains what you may do, every command and what
 each answer means.
 
-To install, get this repository, copy the `skills/wosbot` folder into your agent's skills folder, and install
+To install, get this repository, copy the `skills/wallet-of-satoshi` folder into your agent's skills folder, and install
 its two dependencies. Node.js 20 or newer is required.
 
 ```bash
 git clone https://github.com/Wallet-of-Satoshi/wos-skills
-cd wos-skills/skills/wosbot/scripts
+cd wos-skills/skills/wallet-of-satoshi/scripts
 npm ci
 ```
 
 Then:
 
 ```bash
-node wosbot.mjs connect '<connection string>'
-node wosbot.mjs balance
+node wos.mjs connect '<connection string>'
+node wos.mjs balance
 ```
 
 ### How it is built
@@ -93,7 +93,7 @@ node wosbot.mjs balance
 A connection string has two halves, and they go to different places:
 
 ```
-https://<server>/mcp/wosbot_<token>#viewer=v1:<key>&wallet=<public key>
+https://<server>/mcp/wos_<token>#viewer=v1:<key>&wallet=<public key>
 └────────── paying out ───────────┘ └────── reading and receiving ─────┘
 ```
 
@@ -109,10 +109,10 @@ the wallet.
 ### Layout
 
 ```
-skills/wosbot/
+skills/wallet-of-satoshi/
   SKILL.md              What an agent reads
   scripts/
-    wosbot.mjs          The command line
+    wos.mjs             The command line
     src/
       connection.mjs    The connection string: reading it and keeping it
       server.mjs        Payment requests, through the MCP server
@@ -127,7 +127,7 @@ skills/wosbot/
 ## Development
 
 ```bash
-cd skills/wosbot/scripts
+cd skills/wallet-of-satoshi/scripts
 npm ci
 npm test
 ```

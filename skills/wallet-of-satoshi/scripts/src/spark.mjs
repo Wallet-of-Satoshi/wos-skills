@@ -1,7 +1,7 @@
 // Everything that talks to Spark: reading the wallet with its viewer key, and making invoices that pay it.
 // Wallet of Satoshi's servers are not involved in any of this, and hold no key that could do it.
 
-import { WosBotError } from './errors.mjs';
+import { SkillError } from './errors.mjs';
 import { describeTokenBalances, describeTokenTransactions, describeTransfer, mergeHistory, tokensByRawId } from './history.mjs';
 import { invoiceAmountMsat } from './lightning.mjs';
 import { describeReceive, invoiceOptions } from './receive.mjs';
@@ -49,7 +49,7 @@ async function withAgentWallet(connection, task) {
 
 /** Passes on the outcomes the skill names, and reports anything else from Spark as one plain refusal. */
 function sparkFailure(error, code, message) {
-  return error instanceof WosBotError ? error : new WosBotError(code, message);
+  return error instanceof SkillError ? error : new SkillError(code, message);
 }
 
 /** The wallet's sats and token balances. `empty` says Spark showed nothing at all, which the caller must check. */
@@ -151,7 +151,7 @@ async function sparkInvoiceStatus(connection, sparkInvoice) {
     decoded = null;
   }
   if (decoded?.identityPublicKey !== connection.walletPubKey || !decoded.sparkInvoiceFields) {
-    throw new WosBotError('INVALID_SPARK_INVOICE', 'Give the spark_invoice the invoice command returned');
+    throw new SkillError('INVALID_SPARK_INVOICE', 'Give the spark_invoice the invoice command returned');
   }
   const found = (await client.getSparkInvoices({invoices: [sparkInvoice]})).invoiceStatuses[0];
   const paidBy = found?.transferType?.$case === 'satsTransfer' ? found.transferType.satsTransfer.transferId : undefined;
@@ -164,13 +164,13 @@ async function sparkInvoiceStatus(connection, sparkInvoice) {
  */
 export async function invoiceStatus(connection, requestId, sparkInvoice) {
   if (!/^SparkLightningReceiveRequest:[0-9a-f-]{36}$/.test(String(requestId || ''))) {
-    throw new WosBotError('INVALID_REQUEST_ID', 'Give the request_id the invoice command returned');
+    throw new SkillError('INVALID_REQUEST_ID', 'Give the request_id the invoice command returned');
   }
   try {
     const spark = sparkInvoice ? await sparkInvoiceStatus(connection, sparkInvoice) : undefined;
     const request = await withAgentWallet(connection, wallet => wallet.getLightningReceiveRequest(requestId));
     if (!request) {
-      throw new WosBotError('INVOICE_NOT_FOUND', 'No invoice with that request_id was created with this connection');
+      throw new SkillError('INVOICE_NOT_FOUND', 'No invoice with that request_id was created with this connection');
     }
     return describeReceive(request, spark, Date.now());
   } catch (error) {
