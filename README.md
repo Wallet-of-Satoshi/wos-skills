@@ -51,7 +51,8 @@ tools that were added to it beforehand. So the connection has to be added once, 
 
 1. In the chat app, find where custom connectors or MCP servers are added. Not every app or plan offers this.
 2. Add a new one. For its address, use your connection string **up to, but not including, the `#`**. In the
-   Wallet of Satoshi app, tap the string itself to copy it on its own, then leave off everything from the `#`.
+   Wallet of Satoshi app, tap **Copy for my AI** and paste. Keep only the part that starts with `https://` and
+   ends just before the `#`, and delete the note above it and everything from the `#` on.
 3. If it asks how to sign in, choose no authentication. The address already carries what it needs.
 
 Once it is added, the chat app can ask you to make a payment and tell you how it went. You approve or decline
